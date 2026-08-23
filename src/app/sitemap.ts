@@ -1,1 +1,5 @@
-import type {MetadataRoute} from "next"; export default function sitemap():MetadataRoute.Sitemap{return ["/","/create","/history","/templates","/help","/privacy","/terms"].map(url=>({url:`https://wzxu-invoice-maker.vercel.app${url}`,lastModified:new Date()}))}
+import type {MetadataRoute} from "next";
+
+export default function sitemap():MetadataRoute.Sitemap{
+  return ["/","/create","/history","/help","/privacy","/terms"].map(url=>({url:`https://wzxu-invoice-maker.vercel.app${url}`,lastModified:new Date()}))
+}

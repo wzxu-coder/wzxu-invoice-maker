@@ -84,3 +84,31 @@ test("keeps the editor usable on mobile with a long invoice",async({page})=>{
   await expect(page.getByRole("button",{name:"Finalize invoice"})).toBeVisible();
   await expect(page.locator("table tbody tr")).toHaveCount(41);
 });
+
+test("provides accessible mobile navigation for History and Help",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/");
+  const menu=page.getByRole("button",{name:"Menu"});
+  await expect(menu).toBeVisible();
+  await expect(menu).toHaveAttribute("aria-expanded","false");
+  await menu.click();
+  await expect(menu).toHaveAttribute("aria-expanded","true");
+  await expect(page.getByRole("menuitem",{name:"History"})).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("menuitem",{name:"History"})).toBeHidden();
+  await menu.click();
+  await page.getByRole("menuitem",{name:"History"}).click();
+  await expect(page).toHaveURL(/\/history$/);
+  await page.goto("/");
+  await menu.click();
+  await page.getByRole("menuitem",{name:"Help"}).click();
+  await expect(page).toHaveURL(/\/help$/);
+});
+
+test("keeps desktop secondary navigation visible without the mobile menu",async({page})=>{
+  await page.setViewportSize({width:1280,height:800});
+  await page.goto("/");
+  await expect(page.getByRole("link",{name:"History"})).toBeVisible();
+  await expect(page.getByRole("link",{name:"Help"})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Menu"})).toBeHidden();
+});

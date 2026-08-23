@@ -7,3 +7,20 @@
 @page{margin:0}
 .brand{display:block;width:220px;height:52px;background:none;font-size:0;overflow:hidden}.brand img{display:block;width:100%;height:100%;object-fit:contain}
 @media(max-width:560px){.brand{width:172px;height:42px}}
+/* WZXU brand theme */
+:root{--bg:#020914;--surface:#071522;--surface2:#0b2034;--text:#f2f7ff;--muted:#8fa9c4;--line:#15324b;--accent:#009fe3;--violet:#2d7cff}
+body{background:var(--bg)}
+.nav{background:rgba(2,9,20,.86);border-bottom-color:rgba(0,159,227,.2)}
+.brand img{mix-blend-mode:screen;filter:saturate(1.08) contrast(1.04)}
+.navlinks a{transition:color .18s ease}.navlinks a:hover,.navlinks a:focus-visible{color:#54d7ff}
+.btn{background:var(--surface);border-color:#1a4665;transition:background .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease}
+.btn:hover{border-color:#00b8ff;background:#0b2438}
+.btn:focus-visible,.nav a:focus-visible,.field input:focus-visible,.field select:focus-visible,.line input:focus-visible{outline:2px solid #54d7ff;outline-offset:2px}
+.btn.primary{background:#009fe3;border-color:#009fe3;color:#02101b;box-shadow:0 8px 24px rgba(0,159,227,.2)}
+.btn.primary:hover{background:#2ac4ff;border-color:#2ac4ff;box-shadow:0 10px 28px rgba(0,184,255,.3)}
+.btn.ghost{border-color:#1a4665;color:#b9d8f1}
+.kicker,.status{color:#43d3ff}.feature{border-color:#009fe3}
+.panel{background:var(--surface);border-color:var(--line)}
+.field input,.field textarea,.field select{background:#040f1c;border-color:#173b57}
+.support-btn{border-color:#18759c;color:#73ddff}.support-btn:hover{background:#092b42;border-color:#2ac4ff}
+.footer{border-top-color:var(--line)}

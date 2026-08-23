@@ -1,0 +1,1 @@
+export default function Offline(){return <main className="page"><div className="empty"><h1>You’re offline</h1><p className="muted">Previously loaded invoices may still be available on this device.</p></div></main>}

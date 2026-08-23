@@ -1,0 +1,6 @@
+import type {InvoiceRecord,CalculationResult} from "@/domain/invoice/types";
+export function sanitizeFilename(value:string){return (value.trim().replace(/[^a-z0-9._-]+/gi,"-").replace(/^-+|-+$/g,"")||"invoice").slice(0,100)}
+export function pdfFilename(invoice:InvoiceRecord){return `${sanitizeFilename(invoice.invoiceNumber)}.pdf`}
+export function emailSubject(invoice:InvoiceRecord){return `Invoice ${invoice.invoiceNumber} from ${invoice.business.name||"your business"}`}
+export function emailBody(invoice:InvoiceRecord,result:CalculationResult){return [`Hello ${invoice.client.name||invoice.client.company||"there"},`,``,`Please find the invoice details below:`,`Invoice: ${invoice.invoiceNumber}`,`Total: ${invoice.currency} ${(result.grandTotalMinor/100).toFixed(2)}`,`Amount due: ${invoice.currency} ${(result.amountDueMinor/100).toFixed(2)}`,`Due date: ${invoice.dueDate}`,``,`Please download the PDF from WZXU Invoice Maker and attach it to this email before sending.`,``,`Thank you,`,invoice.business.name||""].join("\n")}
+export function mailtoUrl(invoice:InvoiceRecord,result:CalculationResult){if(!invoice.client.email.trim())return null;return `mailto:${encodeURIComponent(invoice.client.email.trim())}?subject=${encodeURIComponent(emailSubject(invoice))}&body=${encodeURIComponent(emailBody(invoice,result))}`}

@@ -6,3 +6,6 @@
 .action-error{color:#ff9ca8;background:#341c23;border:1px solid #6f3540;border-radius:8px;padding:9px 12px;margin-top:8px;font-size:13px}.btn:disabled{opacity:.6;cursor:wait}
  .preview::after{content:"WZXU Invoice Maker · WZXU.pro";display:block;margin-top:28px;padding-top:12px;border-top:1px solid #d8e1e3;color:#68808a;font-size:10px;text-align:center}
 @page{margin:0}
+.brand{display:block;width:220px;height:52px;background:url("/brand/wzxu-invoice-maker.png") center/contain no-repeat;font-size:0;overflow:hidden}
+.preview-top>div:first-child::before{content:"";display:block;width:42px;height:42px;margin-bottom:8px;background:url("/brand/wzxu-invoice-mark.png") center/contain no-repeat}
+@media(max-width:560px){.brand{width:172px;height:42px}.preview-top>div:first-child::before{width:36px;height:36px}}

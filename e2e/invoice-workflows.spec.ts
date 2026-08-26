@@ -124,4 +124,5 @@ test("publishes install icon metadata without invoice data",async({page,request}
   await page.goto("/");
   await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href",/favicon\.png$/);
   await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute("href",/wzxu-invoice-icon-180\.png$/);
+  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute("href",/manifest\.webmanifest$/);
 });

@@ -112,3 +112,16 @@ test("keeps desktop secondary navigation visible without the mobile menu",async(
   await expect(page.getByRole("link",{name:"Help"})).toBeVisible();
   await expect(page.getByRole("button",{name:"Menu"})).toBeHidden();
 });
+
+test("publishes install icon metadata without invoice data",async({page,request})=>{
+  const manifest=await request.get("/manifest.webmanifest");
+  expect(manifest.ok()).toBeTruthy();
+  const data=await manifest.json();
+  expect(data.icons).toEqual(expect.arrayContaining([
+    expect.objectContaining({src:"/brand/icons/wzxu-invoice-icon-192.png",sizes:"192x192"}),
+    expect.objectContaining({src:"/brand/icons/wzxu-invoice-icon-512.png",sizes:"512x512"})
+  ]));
+  await page.goto("/");
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href",/favicon\.png$/);
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute("href",/wzxu-invoice-icon-180\.png$/);
+});

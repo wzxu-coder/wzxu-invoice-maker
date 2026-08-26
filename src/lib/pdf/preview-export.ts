@@ -17,11 +17,26 @@ export function fitPreviewToPage(sourceWidth:number, sourceHeight:number, pageSi
 }
 
 export async function downloadPreviewPdf(element:HTMLElement, invoice:InvoiceRecord){
+  const documentPdf=await createPreviewPdf(element,invoice);
+  documentPdf.save(pdfFilename(invoice));
+}
+
+export async function createPreviewPdf(element:HTMLElement, invoice:InvoiceRecord){
   await document.fonts?.ready;
   const canvas=await html2canvas(element,{backgroundColor:"#ffffff",scale:2,useCORS:true,logging:false});
   const page=pdfPagePoints[invoice.appearance.pageSize];
   const placement=fitPreviewToPage(canvas.width,canvas.height,invoice.appearance.pageSize);
   const documentPdf=new jsPDF({orientation:"portrait",unit:"pt",format:[page.width,page.height],compress:true});
   documentPdf.addImage(canvas.toDataURL("image/png"),"PNG",placement.x,placement.y,placement.width,placement.height,undefined,"FAST");
-  documentPdf.save(pdfFilename(invoice));
+  return documentPdf;
+}
+
+export async function sharePreviewPdf(element:HTMLElement, invoice:InvoiceRecord){
+  if(!navigator.share) return false;
+  const documentPdf=await createPreviewPdf(element,invoice);
+  const blob=documentPdf.output("blob");
+  const file=new File([blob],pdfFilename(invoice),{type:"application/pdf"});
+  if(navigator.canShare && !navigator.canShare({files:[file]})) return false;
+  await navigator.share({title:`Invoice ${invoice.invoiceNumber}`,text:`Invoice ${invoice.invoiceNumber} from ${invoice.business.name||"your business"}`,files:[file]});
+  return true;
 }

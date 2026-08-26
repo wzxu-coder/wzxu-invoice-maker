@@ -5,3 +5,4 @@ export async function saveInvoice(invoice:InvoiceRecord){if(db) await db.invoice
 export async function getInvoices(){return db?db.invoices.orderBy("updatedAt").reverse().toArray():[]}
 export async function getInvoice(id:string){return db?db.invoices.get(id):undefined}
 export async function deleteInvoice(id:string){if(db) await db.invoices.delete(id)}
+export async function saveDemoInvoices(){const {createDemoInvoices}=await import("@/domain/invoice/demo");const invoices=createDemoInvoices();if(db){await db.invoices.where("id").startsWith("demo-").delete();await db.invoices.bulkPut(invoices)}return invoices}

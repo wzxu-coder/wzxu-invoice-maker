@@ -32,4 +32,13 @@ describe("createInvoicePresentation",()=>{
     expect(view.columns.description).toBe("Descripción");
     expect(view.items[0].amount).toContain("123.45");
   });
+
+  it("keeps the thank-you message while suppressing stored terms",()=>{
+    const invoice=createInvoice();
+    invoice.notes.thankYouMessage="Thank you for your business.";
+    invoice.notes.terms="Payment due within 14 days.";
+    const view=createInvoicePresentation(invoice,calculateInvoice(invoice));
+    expect(view.thankYouMessage).toBe("Thank you for your business.");
+    expect(view.terms).toBe("");
+  });
 });

@@ -12,7 +12,7 @@ describe("promotional demo invoices",()=>{
       expect(invoice.business.name).toBeTruthy(); expect(invoice.business.address.line1).toBeTruthy();
       expect(invoice.client.company).toBeTruthy(); expect(invoice.client.address.city).toBeTruthy();
       expect(invoice.items.length).toBeGreaterThanOrEqual(2); expect(invoice.paymentMethods.length).toBeGreaterThan(0);
-      expect(invoice.notes.terms).toBeTruthy(); expect(invoice.notes.signatureName).toBeTruthy();
+      expect(invoice.notes.terms).toBe(""); expect(invoice.notes.signatureName).toBeTruthy();
       expect(["USD","MXN","CAD","EUR","GBP","AUD","JPY","BRL"]).toContain(invoice.currency);
       const result=calculateInvoice(invoice); expect(result.grandTotalMinor).toBeGreaterThanOrEqual(0); expect(result.amountDueMinor).toBeLessThanOrEqual(result.grandTotalMinor);
     }

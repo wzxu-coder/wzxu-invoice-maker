@@ -45,7 +45,9 @@ export function createInvoicePresentation(invoice: InvoiceRecord, result: Calcul
       {label: label("Amount due"), value: formatMoney(result.amountDueMinor), emphasis: true},
     ],
     thankYouMessage: invoice.notes.thankYouMessage,
-    terms: invoice.notes.terms,
+    // Terms remain in stored records for schema compatibility, but WZXU's
+    // general-purpose invoice output intentionally does not publish them.
+    terms: "",
     pageSize: invoice.appearance.pageSize,
   };
 }

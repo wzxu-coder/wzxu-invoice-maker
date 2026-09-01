@@ -63,6 +63,43 @@ test("downloads a finalized PDF with a safe filename",async({page})=>{
   expect(stat.size).toBeGreaterThan(0);
 });
 
+test("opens an issued invoice in a clean PDF review window without auto-printing",async({page})=>{
+  await page.goto("/create");
+  await populateInvoice(page);
+  await page.getByRole("button",{name:"Finalize invoice"}).click();
+  await page.evaluate(()=>{
+    const state={opened:false,replaced:false,printed:false,pagePrintCalled:false};
+    Object.assign(window,{__printTestState:state});
+    window.print=()=>{state.pagePrintCalled=true};
+    window.open=(()=>{
+      state.opened=true;
+      return {
+        location:{replace:()=>{state.replaced=true}},
+        focus:()=>{},
+        print:()=>{state.printed=true},
+        closed:false,
+        close:()=>{},
+      } as unknown as Window;
+    }) as typeof window.open;
+  });
+  await page.getByRole("button",{name:"Print"}).click();
+  await page.waitForFunction(()=>((window as typeof window&{__printTestState?:{replaced:boolean}}).__printTestState?.replaced));
+  const state=await page.evaluate(()=>((window as typeof window&{__printTestState?:Record<string,boolean>}).__printTestState));
+  expect(state).toMatchObject({opened:true,replaced:true,printed:false,pagePrintCalled:false});
+});
+
+test("reports a blocked PDF review window without a runtime error",async({page})=>{
+  const errors:string[]=[];
+  page.on("pageerror",error=>errors.push(error.message));
+  await page.goto("/create");
+  await populateInvoice(page);
+  await page.getByRole("button",{name:"Finalize invoice"}).click();
+  await page.evaluate(()=>{window.open=(()=>null) as typeof window.open});
+  await page.getByRole("button",{name:"Print"}).click();
+  await expect(page.locator(".action-error")).toContainText("blocked the print window");
+  expect(errors).toEqual([]);
+});
+
 test("deletes and preserves invoices from History",async({page})=>{
   await page.goto("/create");
   await populateInvoice(page);

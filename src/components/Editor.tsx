@@ -8,7 +8,7 @@ import {calculateInvoice} from "@/domain/invoice/calculations";
 import {money} from "@/lib/format";
 import {getInvoice,saveInvoice} from "@/lib/storage";
 import {mailtoUrl} from "@/lib/invoice-actions";
-import {downloadPreviewPdf,sharePreviewPdf} from "@/lib/pdf/preview-export";
+import {downloadPreviewPdf,openPrintPreviewPdf,sharePreviewPdf} from "@/lib/pdf/preview-export";
 import {validateInvoiceForFinalization} from "@/lib/invoice-validation";
 import {createInvoicePresentation} from "@/lib/invoice-presentation";
 
@@ -25,7 +25,7 @@ export default function Editor({invoiceId}:{invoiceId?:string}){
   const save=async()=>{await saveInvoice(invoice);setSaved(true);setActionError("");setTimeout(()=>setSaved(false),1600)};
   const finalize=async()=>{const errors=validateInvoiceForFinalization(invoice);if(errors.length){setActionError(errors.join(" "));return}const next=structuredClone(invoice);next.status="issued";next.updatedAt=new Date().toISOString();setInvoice(next);await saveInvoice(next);setActionError("");setSaved(true);setTimeout(()=>setSaved(false),1600)};
   const requireIssued=()=>{if(invoice.status!=="issued"){setActionError("Finalize this invoice before printing, downloading a PDF, or opening email.");return false}setActionError("");return true};
-  const print=()=>{if(requireIssued())window.print()};
+  const print=async()=>{if(!requireIssued())return;const preview=document.querySelector<HTMLElement>("[data-invoice-preview]");if(!preview){setActionError("PDF preview is unavailable. Please refresh and try again.");return}const printWindow=window.open("","_blank");if(!printWindow){setActionError("Your browser blocked the print window. Allow pop-ups and try again.");return}setPdfBusy(true);setPdfExporting(true);try{await openPrintPreviewPdf(preview,invoice,printWindow)}catch{printWindow.close();setActionError("Print preparation failed. Your invoice is still safe; please try again.")}finally{setPdfExporting(false);setPdfBusy(false)}};
   const downloadPdf=async()=>{if(!requireIssued())return;const preview=document.querySelector<HTMLElement>("[data-invoice-preview]");if(!preview){setActionError("PDF preview is unavailable. Please refresh and try again.");return}setPdfBusy(true);setPdfExporting(true);try{await downloadPreviewPdf(preview,invoice)}catch{setActionError("PDF generation failed. Your invoice is still safe; please try again.")}finally{setPdfExporting(false);setPdfBusy(false)}};
   const email=async()=>{if(!requireIssued())return;if(!invoice.client.email.trim()){setActionError("Add a client email before sharing this invoice.");return}const preview=document.querySelector<HTMLElement>("[data-invoice-preview]");if(!preview){setActionError("PDF preview is unavailable. Please refresh and try again.");return}setPdfBusy(true);setPdfExporting(true);try{const shared=await sharePreviewPdf(preview,invoice);if(!shared){await downloadPreviewPdf(preview,invoice);const url=mailtoUrl(invoice,result);if(url)window.location.href=url;else setActionError("PDF downloaded. Open your email app and attach it manually.")}}catch(error){if(error instanceof DOMException && error.name==="AbortError")return;setActionError("Email preparation failed. Your invoice is still safe; please try again.")}finally{setPdfExporting(false);setPdfBusy(false)}};
   const field=(label:string,value:string,onChange:(v:string)=>void)=><div className="field"><label>{label}</label><input value={value} onChange={e=>onChange(e.target.value)}/></div>;
